@@ -1,27 +1,22 @@
-using DotNet6Practical.Data;
-using DotNet6Practical.Models;
+using DotNet9Practical.Data;
+using DotNet9Practical.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace DotNet6Practical.Controllers
+namespace DotNet9Practical.Controllers
 {
     [ApiController]
     [Route("[controller]")]
 
-    public class EmployeeController : ControllerBase
+    public class EmployeeController(Practical27Context _context) : ControllerBase
     {
-        private readonly Practical27Context _context;
-        public EmployeeController(Practical27Context context)
-        {
-            _context = context;
-        }
 
         [HttpGet]
         public IActionResult GetEmployees()
         {
-            List<Employee> employeesList = _context.Employees.Where(emp => emp.EmployeeStatus == "Active").ToList();
-            if (employeesList.Count == 0)
+            List<Employee> employeesList = [.. _context.Employees.Where(emp => emp.EmployeeStatus == "Active")];
+            if (employeesList.Count != 0)
             {
                 return Ok(employeesList);
             }
