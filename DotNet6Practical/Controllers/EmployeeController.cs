@@ -19,9 +19,17 @@ namespace DotNet6Practical.Controllers
         }
 
         [HttpGet]
-        public List<Employee> GetEmployees()
+        public IActionResult GetEmployees()
         {
-            return _context.Employees.ToList();
+            List<Employee> employeesList = _context.Employees.Where(emp => emp.EmployeeStatus == "Active").ToList();
+            if (employeesList.Any())
+            {
+                return Ok(employeesList);
+            }
+            else
+            {
+                return NotFound("No active employees found");
+            }
         }
 
         [HttpGet("{id?}")]
@@ -71,7 +79,7 @@ namespace DotNet6Practical.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateEmployee(int id, [FromBody] EmployeeDto employeeDto)
+        public IActionResult UpdateEmployee(int id, [FromBody] EmployeeDto? employeeDto)
         {
             var employee = _context.Employees.Find(id);
             if (employee == null)
@@ -94,6 +102,30 @@ namespace DotNet6Practical.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = "Error updating employee", error = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteEmployee(int id)
+        {
+            var employee = _context.Employees.Find(id);
+            if (employee == null)
+            {
+                return NotFound($"Employee with id {id} can not be found");
+            }
+            else if (employee.EmployeeStatus != "Active")
+            {
+                return BadRequest("This user is already inactive.");
+            }
+            employee.EmployeeStatus = "Inactive";
+            try
+            {
+                _context.SaveChanges();
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Error deleting employee", error = ex.Message });
             }
         }
     }
