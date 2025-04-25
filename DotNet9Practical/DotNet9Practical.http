@@ -1,0 +1,6 @@
+@DotNet9Practical_HostAddress = http://localhost:5064
+
+GET {{DotNet9Practical_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
